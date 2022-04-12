@@ -4,8 +4,27 @@ import Comparator from '../../utils/comparator/Comparator';
 export default class LinkedList {
   head = null;
   tail = null;
-  constructor() {}
+  constructor(comparatorFunction) {
+    this.compare = new Comparator(comparatorFunction);
+  }
 
+  /**
+   * Should create a linked list from an array
+   * @param {Array<*>} values 
+   */
+  fromArray(values) {
+      values.forEach(value => {
+          this.append(value);
+      });
+
+      return this;
+
+  }
+
+  /**
+   * Convert the linked list to an array
+   * @returns 
+   */
   toArray() {
     const nodes = [];
 
@@ -18,9 +37,9 @@ export default class LinkedList {
     return nodes;
   }
 
-  toString() {
+  toString(callback) {
     return this.toArray()
-      .map((node) => node.toString())
+      .map((node) => node.toString(callback))
       .toString(); // Array.toString automatically puts a comma between each item. Nifty!
   }
 
@@ -37,12 +56,14 @@ export default class LinkedList {
     if (this.head == null) {
       this.head = newNode;
       this.tail = newNode;
-      return;
+      return this;
     }
 
     // else set the tail's next to the new node
     this.tail.next = newNode;
     this.tail = newNode;
+
+    return this;
   }
 
   /**
@@ -158,7 +179,7 @@ export default class LinkedList {
       return null;
     }
 
-    let deleteNode = this.tail;
+    const deleteNode = this.tail;
 
     // if only one node in the list
     if (this.head == this.tail) {
@@ -182,6 +203,77 @@ export default class LinkedList {
   }
 
   deleteHead() {
-      
+    // can't delete anything if no nodes are in the list
+    if (!this.head) {
+      return null;
+    }
+
+    const deleteNode = this.head;
+
+    // if only one node in the list
+    if (this.head == this.tail) {
+      this.head = null;
+      this.tail = null;
+
+      return deleteNode;
+    }
+
+    // set head to be the next node in the list;
+    this.head = this.head.next;
+
+    return deleteNode;
+  }
+
+  find({ value = undefined, callback = undefined }) {
+    // can't find anything if no nodes are in the list
+    if (!this.head) {
+      return null;
+    }
+    let curr = this.head;
+
+    while (curr) {
+      // if a callback has been passed, call the callback and pass the value of the current node
+      if (callback && callback(curr.value)) {
+        return curr;
+      }
+
+      if (value && this.compare.equal(curr.value, value)) {
+        return curr;
+      }
+      curr = curr.next;
+    }
+
+    // if we get here, the node was not found. Return null
+    return null;
+  }
+
+  /**
+   * Reverse the linked list
+   */
+  reverse() {
+      // 1->2->3, 2->1->3 3->2->1
+
+      //1->2->3->4 //2->1->3->4 // 3->2->1->4
+
+      let curr = this.head.next;
+
+      let prev = this.head; // store the prev head, which we will keep pushing down
+
+      while (curr) {
+          
+        // make the old head's next, the current next ex: 1->2->3 becomes 1->3
+          prev.next = curr.next;
+
+          // make curr's next the prev head ex: 1->3 becomes 2->1->3
+          curr.next = this.head;
+
+          // mark curr as the new head
+          this.head = curr;
+
+          // move to the next node that needs to be processed, in the example it is 3
+          curr = prev.next;
+      }
+
+      this.tail = prev;
   }
 }
