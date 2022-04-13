@@ -1,9 +1,12 @@
 import DoublyLinkedListNode from './DoublyLinkedListNode';
+import Comparator from '../../utils/comparator/Comparator';
 
 export default class DoublyLinkedList {
-  constructor() {
+  constructor(comparatorFunction) {
     this.head = null;
     this.tail = null;
+
+    this.comparator = new Comparator(comparatorFunction);
   }
 
   /**
@@ -188,5 +191,64 @@ export default class DoublyLinkedList {
     this.head.previous = null;
 
     return nodeToDelete;
+  }
+
+  find({value = undefined, callback = undefined}) {
+    // can't find anything if list is empty
+    if (!this.head) {
+      return null;
+    }
+
+    let curr = this.head;
+
+    while (curr) {
+
+      if (callback && callback(curr.value)) {
+        return curr;
+      }
+      if (value && this.comparator.equal(curr.value, value)) {
+        return curr;
+      }
+
+      curr = curr.next; 
+    }
+
+    // if we get here, a node with the passed in arguments could not be found
+    return null;
+  }
+
+  reverse() {
+    // 1->2->3 2->1->3 3->2->1
+    // can't reverse anything if list is empty
+    if (!this.head) {
+      return this;
+    }
+
+    let prevNode = null;
+    let nextNode = null;
+
+    let curr = this.head;
+
+    while (curr) {
+      // store the next node
+      nextNode = curr.next;
+
+      // store the previous
+      prevNode = curr.previous;
+
+      curr.next = prevNode; // 1-2-3 becomes 2->1->null, then null->3->2-1->null
+      curr.previous = nextNode;
+
+      
+      // Move currNode nodes one step forward.
+      //prevNode = currNode;
+      curr = nextNode;
+    }
+
+    // reset head and tail
+    const tmp = this.tail;
+    this.tail = this.head;
+    this.head = tmp;
+
   }
 }
