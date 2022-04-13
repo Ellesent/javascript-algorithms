@@ -12,7 +12,8 @@ export default class HashTable {
    */
   constructor(hashTableSize = defaultHashTableSize) {
     // Create hash table of certain size and fill each bucket with empty linked list.
-    this.buckets = Array(hashTableSize).fill(null).map(() => new LinkedList());
+    // Note that fill will fill the array with a static value, meaning that if an object is passed it will reference that same object for all indices. This is why map is needed.
+    this.buckets = Array(hashTableSize).fill(new LinkedList()).map(() => new LinkedList());
 
     // Just to keep track of all actual keys in a fast way.
     this.keys = {};
