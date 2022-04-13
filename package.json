@@ -30,6 +30,7 @@
   "scripts": {
     "lint": "eslint ./src/**",
     "test": "jest",
+    "jest-clear-cache": "jest --clear-cache",
     "coverage": "npm run test -- --coverage",
     "ci": "npm run lint && npm run coverage",
     "prepare": "husky install"
