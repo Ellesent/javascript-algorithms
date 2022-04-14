@@ -37,7 +37,7 @@ export default class HashTable {
     // where charCodeAt(i) is the i-th character code of the key, n is the length of the key and
     // PRIME is just any prime number like 31.
     const hash = Array.from(key).reduce(
-      (hashAccumulator, keySymbol) => (hashAccumulator + keySymbol.charCodeAt(0)),
+      (hashAccumulator, char) => (hashAccumulator + char.charCodeAt(0)),
       0,
     );
 
@@ -50,18 +50,23 @@ export default class HashTable {
    * @param {*} value
    */
   set(key, value) {
-    const keyHash = this.hash(key);
-    this.keys[key] = keyHash;
-    const bucketLinkedList = this.buckets[keyHash];
-    const node = bucketLinkedList.find({ callback: (nodeValue) => nodeValue.key === key });
+   // get the index
+   const index = this.hash(key);
 
-    if (!node) {
-      // Insert new node.
-      bucketLinkedList.append({ key, value });
-    } else {
-      // Update value of existing node.
-      node.value.value = value;
-    }
+   const linkedList = this.buckets[index];
+
+   // see if the key already exists
+   const element = linkedList.find({callback: (value) => value.key === key});
+
+   // if an element with the specified key couldn't be found, then add a new one. Otherwise modify the current element's value
+   if (!element) {
+     linkedList.append({key: key, value: value});
+   }
+   else {
+     element.value.value = value;
+   }
+
+   this.keys[key] = value;
   }
 
   /**
@@ -69,16 +74,25 @@ export default class HashTable {
    * @return {*}
    */
   delete(key) {
-    const keyHash = this.hash(key);
-    delete this.keys[key];
-    const bucketLinkedList = this.buckets[keyHash];
-    const node = bucketLinkedList.find({ callback: (nodeValue) => nodeValue.key === key });
+    // get the index
+    const index = this.hash(key);
+   
+    // get the linked list 
+    const linkedList = this.buckets[index];
 
-    if (node) {
-      return bucketLinkedList.delete(node.value);
+    // get the element connected to the passed in key
+    const element = linkedList.find({callback: (value) => value.key === key});
+
+    if (element) {
+      linkedList.delete(element.value);
+
+      // removed from the keys object
+      delete this.keys[key];
+    }
+    else {
+      return null;
     }
 
-    return null;
   }
 
   /**
@@ -86,10 +100,16 @@ export default class HashTable {
    * @return {*}
    */
   get(key) {
-    const bucketLinkedList = this.buckets[this.hash(key)];
-    const node = bucketLinkedList.find({ callback: (nodeValue) => nodeValue.key === key });
+   // get the index
+   const index = this.hash(key);
+   
+   // get the linked list 
+   const linkedList = this.buckets[index];
 
-    return node ? node.value.value : undefined;
+   const element = linkedList.find({callback: (value) => value.key === key});
+
+   return element? element.value.value : undefined;
+
   }
 
   /**
