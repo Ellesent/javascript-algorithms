@@ -50,7 +50,7 @@ the data.
 - [x] `B` [Queue](src/data-structures/queue)
 - [x] `B` [Stack](src/data-structures/stack)
 - [x] `B` [Hash Table](src/data-structures/hash-table)
-- [ ] `B` [Heap](src/data-structures/heap) - max and min heap versions
+- [x] `B` [Heap](src/data-structures/heap) - max and min heap versions
 - [ ] `B` [Priority Queue](src/data-structures/priority-queue)
 - [ ] `A` [Trie](src/data-structures/trie)
 - [ ] `A` [Tree](src/data-structures/tree)
